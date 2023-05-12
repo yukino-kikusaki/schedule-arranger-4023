@@ -2,22 +2,37 @@
 const express = require('express');
 const router = express.Router();
 const authenticationEnsurer = require('./authentication-ensurer');
-const Comment = require('../models/comment');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 router.post(
-  '/:scheduleId/users/:userId/comments',
+  '/:scheduleId/users/:userId/candidates/:candidateId',
   authenticationEnsurer,
   async (req, res, next) => {
     const scheduleId = req.params.scheduleId;
-    const userId = req.params.userId;
-    const comment = req.body.comment;
+    const userId = parseInt(req.params.userId);
+    const candidateId = parseInt(req.params.candidateId);
+    let availability = req.body.availability;
+    availability = availability ? parseInt(availability) : 0;
 
-    await Comment.upsert({
-      scheduleId: scheduleId,
-      userId: userId,
-      comment: comment.slice(0, 255)
+    const data = {
+      userId,
+      scheduleId,
+      candidateId,
+      availability
+    };
+    await prisma.availability.upsert({
+      where: {
+        availabilityCompositeId: {
+          candidateId,
+          userId
+        }
+      },
+      create: data,
+      update: data
     });
-    res.json({ status: 'OK', comment: comment });
+
+    res.json({ status: 'OK', availability: availability });
   }
 );
 
