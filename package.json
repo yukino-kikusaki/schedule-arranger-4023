@@ -19,8 +19,7 @@
     "dayjs": "1.11.10",
     "hono": "4.2.7",
     "iron-session": "8.0.1",
-    "jquery": "3.7.1",
-    "uuid": "9.0.1"
+    "jquery": "3.7.1"
   },
   "devDependencies": {
     "@babel/core": "7.23.9",
